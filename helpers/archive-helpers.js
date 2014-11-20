@@ -59,11 +59,9 @@ exports.isUrlArchived = function(url){
 };
 
 exports.downloadUrls = function(){
-  //go Django go
   var listUrl = exports.readListOfUrls();
   _.each(listUrl, function(url, index, collection){
     if(!exports.isUrlArchived(url)){
-      //download site
       var fullPath = path.join(exports.paths.archivedSites, url);
 
       http.get({
@@ -73,10 +71,14 @@ exports.downloadUrls = function(){
           }
         }, fullPath, function (err, res) {
           if (err) {
-            console.error(err);
+            fs.appendFile('log.txt', err, function(err){
+              if (err) throw err;
+            });
             return;
-        }
-        console.log(res.code, res.headers, res.file);
+          }
+        fs.appendFile('log.txt', res.code + '\n' + res.headers + '\n' + res.file, function(err){
+          if (err) throw err;
+        });
       });
     }
   });
