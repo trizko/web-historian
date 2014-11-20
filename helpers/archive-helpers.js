@@ -32,54 +32,74 @@ exports.isAcceptableUrl = function(url){
   return _.contains(exports.acceptableEXT, path.extname(url));
 };
 
-exports.readListOfUrls = function(){
-  return fs.readFileSync(exports.paths.list).toString().split('\n');
+exports.readListOfUrls = function(callback){
+  fs.readFile(exports.paths.list, function (err, data){
+    if (err) throw err;
+    data = data.toString().split('\n');
+    callback(data);
+  });
 };
 
-exports.isUrlInList = function(url){
-  var listUrl = exports.readListOfUrls();
-  if(_.indexOf(listUrl, url) > -1){
-    return true;
-  }
-  return false;
+exports.ifUrlNotInList = function(url, callback){
+  exports.readListOfUrls(function(listUrl){
+    if(_.indexOf(listUrl, url) === -1){
+      callback(url);
+    }
+  });
 };
 
 exports.addUrlToList = function(url){
-  if(!exports.isUrlInList(url) && exports.isAcceptableUrl(url)){
-    fs.appendFile(exports.paths.list, url + '\n',function(err) {
-      if (err) throw err;
-      console.log('Added ' + url +' to sites.txt');
-    });
+  if(exports.isAcceptableUrl(url)){
+    exports.ifUrlNotInList(url, function(url){
+      fs.appendFile(exports.paths.list, url + '\n',function(err) {
+        if (err) throw err;
+        console.log('Added ' + url +' to sites.txt');
+      });
+    })
   }
 };
 
-exports.isUrlArchived = function(url){
+exports.ifUrlArchived = function(url, callback){
   var urlPath = path.join(exports.paths.archivedSites, url);
-  return fs.existsSync(urlPath);
+  fs.exists(urlPath, function(exists){
+    if(exists){
+      callback(urlPath);
+    }
+  });
+};
+
+exports.ifUrlNotArchived = function(url, callback){
+  var urlPath = path.join(exports.paths.archivedSites, url);
+  fs.exists(urlPath, function(exists){
+    if(!exists){
+      callback(urlPath);
+    }
+  });
 };
 
 exports.downloadUrls = function(){
-  var listUrl = exports.readListOfUrls();
-  _.each(listUrl, function(url, index, collection){
-    if(!exports.isUrlArchived(url)){
-      var fullPath = path.join(exports.paths.archivedSites, url);
-
-      http.get({
-          url: url,
-          progress: function (current, total) {
-            console.log('downloaded %d bytes from %d', current, total);
-          }
-        }, fullPath, function (err, res) {
-          if (err) {
-            fs.appendFile('log.txt', err, function(err){
+  exports.readListOfUrls(function(listUrls){
+    _.each(listUrls, function(url, index, collection){
+      exports.ifUrlNotArchived(url, function(urlPath){
+        http.get(
+          { url: url },
+          urlPath,
+          function (err, res) {
+            if (err) {
+              fs.appendFile(urlPath, 'not noice', function(err){
+                if (err) throw err;
+              });
+              fs.appendFile('/Users/student/Desktop/2014-10-web-historian/log.txt', url + ': ' + err + '\n', function(err){
+                if (err) throw err;
+              });
+              return;
+            }
+            fs.appendFile('/Users/student/Desktop/2014-10-web-historian/log.txt', res.code + '\n' + res.headers + '\n' + res.file, function(err){
               if (err) throw err;
             });
-            return;
           }
-        fs.appendFile('log.txt', res.code + '\n' + res.headers + '\n' + res.file, function(err){
-          if (err) throw err;
-        });
+        );
       });
-    }
+    });
   });
 };

@@ -4,6 +4,19 @@ var helpers = require('./http-helpers');
 var fs = require('fs');
 var _ = require('underscore');
 
+
+// console.log('readListOfUrls:', archive.readListOfUrls());
+// console.log('isUrlInList:', archive.isUrlInList('www.google.com'));
+// console.log('isUrlInList:', archive.isUrlInList('/argybargle'));
+// console.log('addUrlToList:', archive.addUrlToList('noice.herokuapp.com'));
+// console.log('is noice here?', archive.isUrlInList('noice.herokuapp.com'));
+// console.log('add unacceptable:', archive.addUrlToList('noice.herokuapp.www'));
+// console.log('is unacceptable here?', archive.isUrlInList('noice.herokuapp.www'));
+// console.log('is google archived?', archive.isUrlArchived('www.google.com'));
+// console.log('is noice archived?', archive.isUrlArchived('noice.herokuapp.com'));
+// archive.downloadUrls();
+// console.log('is noice archived?', archive.isUrlArchived('noice.herokuapp.com'));
+
 var actions = {
 
   'GET': function(req, res){
@@ -15,6 +28,8 @@ var actions = {
     helpers.collectData(req, function(url){
       url = url.split('=').pop();
       archive.addUrlToList(url);
+      console.log('request:', req);
+      console.log('response:', res);
       res.setHeader('Location', url)
       helpers.sendResponse(res, url, 302);
     });

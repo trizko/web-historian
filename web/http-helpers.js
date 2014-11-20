@@ -15,25 +15,31 @@ exports.serveAssets = function(res, asset, callback) {
   var statusCode = 200;
 
   if(archive.isAcceptableUrl(asset)){
-    statusCode = 302;
-    if(archive.isUrlArchived(asset)){
-      var filePath = path.join(archive.paths.archivedSites, asset);
-    } else {
-      var filePath = path.join(archive.paths.siteAssets, 'loading.html');
-    }
+    var filePath = path.join(archive.paths.archivedSites, asset);
+    fs.readFile(filePath, function(err, data){
+      if(err){
+        statusCode = 302;
+        filePath = path.join(archive.paths.siteAssets, 'loading.html');
+        fs.readFile(filePath, function(err, data){
+          callback(data, statusCode);
+        });
+      } else {
+        callback(data, statusCode);
+      }
+    });
   } else {
     if(asset === '/'){
       asset = 'index.html';
     }
     var filePath = path.join(archive.paths.siteAssets, asset);
-    if(!fs.existsSync(filePath)){
-      callback('404', 404)
-      return;
-    }
+    fs.readFile(filePath, function(err, data){
+      if(err){
+        callback('404', 404);
+      } else {
+        callback(data, statusCode);
+      }
+    });
   }
-
-  var data = fs.readFileSync(filePath);
-  callback(data, statusCode);
 };
 
 

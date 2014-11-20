@@ -2,3 +2,12 @@ www.google.com
 noice.herokuapp.com
 www.cheese.com
 www.example.com
+www.yahoo.com
+www.netflix.com
+www.christophertrev.com
+www.chrome.com
+www.brianscoles.com
+noice.herokuapp.com
+www.heroku.com
+www.chris.com
+www.tony.com
