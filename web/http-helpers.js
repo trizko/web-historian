@@ -1,5 +1,6 @@
 var path = require('path');
 var fs = require('fs');
+var _ = require('underscore');
 var archive = require('../helpers/archive-helpers');
 
 exports.headers = headers = {
@@ -11,10 +12,45 @@ exports.headers = headers = {
 };
 
 exports.serveAssets = function(res, asset, callback) {
-  // Write some code here that helps serve up your static files!
-  // (Static files are things like html (yours or archived from others...), css, or anything that doesn't change often.)
+  var statusCode = 200;
+
+  if(archive.isAcceptableUrl(asset)){
+    statusCode = 302;
+    if(archive.isUrlArchived(asset)){
+      var filePath = path.join(archive.paths.archivedSites, asset);
+    } else {
+      var filePath = path.join(archive.paths.siteAssets, 'loading.html');
+    }
+  } else {
+    if(asset === '/'){
+      asset = 'index.html';
+    }
+    var filePath = path.join(archive.paths.siteAssets, asset);
+    if(!fs.existsSync(filePath)){
+      callback('404', 404)
+      return;
+    }
+  }
+
+  var data = fs.readFileSync(filePath);
+  callback(data, statusCode);
 };
 
 
 
 // As you progress, keep thinking about what helper functions you can put here!
+exports.sendResponse = function(response, data, statusCode) {
+  statusCode = statusCode || 200;
+  response.writeHead(statusCode, headers);
+  response.end(data);
+};
+
+exports.collectData = function(request, callback){
+  var data = "";
+  request.on('data', function(chunk){
+    data += chunk;
+  });
+  request.on('end', function(){
+    callback(data);
+  });
+};
