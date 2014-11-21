@@ -28,8 +28,6 @@ var actions = {
     helpers.collectData(req, function(url){
       url = url.split('=').pop();
       archive.addUrlToList(url);
-      console.log('request:', req);
-      console.log('response:', res);
       res.setHeader('Location', url)
       helpers.sendResponse(res, url, 302);
     });

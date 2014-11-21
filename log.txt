@@ -1,0 +1,14 @@
+200
+[object Object]
+/Users/student/Desktop/2014-10-web-historian/archives/sites/www.yahoo.com200
+[object Object]
+/Users/student/Desktop/2014-10-web-historian/archives/sites/www.cheese.com200
+[object Object]
+/Users/student/Desktop/2014-10-web-historian/archives/sites/www.heroku.com200
+[object Object]
+/Users/student/Desktop/2014-10-web-historian/archives/sites/www.chris.comError: getaddrinfo ENOTFOUNDError: getaddrinfo ENOTFOUNDError: getaddrinfo ENOTFOUNDError: getaddrinfo ENOTFOUNDError: getaddrinfo ENOTFOUNDError: getaddrinfo ENOTFOUNDwww.tony.com: Error: getaddrinfo ENOTFOUND
+www.tony.com: Error: getaddrinfo ENOTFOUND
+200
+[object Object]
+/Users/student/Desktop/2014-10-web-historian/archives/sites/www.paplo.comwww.jsj.com: Error: Timeout of 60000 miliseconds reached for GET http://www.jsj.com.
+www.jsj.com: Error: Timeout of 60000 miliseconds reached for GET http://www.jsj.com.

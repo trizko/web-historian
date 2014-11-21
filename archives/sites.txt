@@ -11,3 +11,5 @@ noice.herokuapp.com
 www.heroku.com
 www.chris.com
 www.tony.com
+www.jsj.com
+www.paplo.com
